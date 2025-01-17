@@ -39,31 +39,11 @@ FTPlace Image Maintainer is a Python project designed to monitor and maintain im
     python -m ft_place_bot <img_path> <origin_x> <origin_y> <access_token> <refresh_token>
     ```
 
-    - 
-
-img_path
-
-: Path to the image to maintain.
-    - 
-
-origin_x
-
-: X coordinate of the origin on the board.
-    - 
-
-origin_y
-
-: Y coordinate of the origin on the board.
-    - 
-
-access_token
-
-: Your access token for the FTPlace API.
-    - 
-
-refresh_token
-
-: Your refresh token for the FTPlace API.
+    - [img_path](http://_vscodecontentref_/0): Path to the image to maintain.
+    - [origin_x](http://_vscodecontentref_/1): X coordinate of the origin on the board.
+    - [origin_y](http://_vscodecontentref_/2): Y coordinate of the origin on the board.
+    - [access_token](http://_vscodecontentref_/3): Your access token for the FTPlace API.
+    - [refresh_token](http://_vscodecontentref_/4): Your refresh token for the FTPlace API.
 
 ## Example
 
