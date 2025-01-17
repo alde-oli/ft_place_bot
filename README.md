@@ -39,11 +39,11 @@ FTPlace Image Maintainer is a Python project designed to monitor and maintain im
     python -m ft_place_bot <img_path> <origin_x> <origin_y> <access_token> <refresh_token>
     ```
 
-    - [img_path](http://_vscodecontentref_/0): Path to the image to maintain.
-    - [origin_x](http://_vscodecontentref_/1): X coordinate of the origin on the board.
-    - [origin_y](http://_vscodecontentref_/2): Y coordinate of the origin on the board.
-    - [access_token](http://_vscodecontentref_/3): Your access token for the FTPlace API.
-    - [refresh_token](http://_vscodecontentref_/4): Your refresh token for the FTPlace API.
+    - `img_path`: Path to the image to maintain.
+    - `origin_x`: X coordinate of the origin on the board.
+    - `origin_y`: Y coordinate of the origin on the board.
+    - `access_token`: Your access token for the FTPlace API.
+    - `refresh_token`: Your refresh token for the FTPlace API.
 
 ## Example
 
@@ -53,27 +53,77 @@ python -m ft_place_bot example_image.png 10 20 your_access_token your_refresh_to
 
 ## Configuration
 
-The color configuration and API settings can be adjusted in the 
+The color configuration and API settings can be adjusted in the `config.py` and `color_config.py` files. You can define color priorities, ignored colors, and sets of similar colors.
 
-config.py
+### API Configuration
 
- and 
+The `APIConfig` class in `config.py` allows you to configure the API settings:
 
-color_config.py
+- `base_url`: The base URL of the FTPlace API.
+- `refresh_token`: The refresh token for authentication.
+- `access_token`: The access token for authentication.
+- `retry_attempts`: Number of retry attempts for failed requests.
+- `check_interval`: Interval in seconds between checks.
 
- files. You can define color priorities, ignored colors, and sets of similar colors.
+### Color Configuration
+
+The `ColorConfig` class in `color_config.py` allows you to configure color priorities and ignored colors:
+
+- `priorities`: A list of `ColorPriority` objects defining the priority levels for different colors.
+- `ignored_source_colors`: A set of color IDs to ignore in the source image.
+- `ignored_board_colors`: A set of color IDs to ignore on the board.
+- `color_sets`: A list of `ColorSet` objects defining sets of similar colors.
+
+### Example Color Configuration
+
+```python
+example_config = ColorConfig(
+    priorities=[
+        ColorPriority(priority_level=1, color_ids={1, 2, 3}),  # Critical colors
+        ColorPriority(priority_level=2, color_ids={4, 5, 6}),  # Important colors
+        ColorPriority(priority_level=3, color_ids={7, 8, 9}),  # Normal colors
+    ],
+    ignored_source_colors={14},
+    ignored_board_colors={0},
+    color_sets=[
+        ColorSet(main_color=2, similar_colors={12, 13, 14}),  # Blue shades
+    ]
+)
+```
 
 ## Logging
 
-The script logs its activities, including connection status, image conversion, and pixel placement, to the console. You can adjust the logging settings in the 
+The script logs its activities, including connection status, image conversion, and pixel placement, to the console. You can adjust the logging settings in the `setup_logging` function in `__main__.py`.
 
-setup_logging
+## Components
 
- function in 
+### `client_api.py`
 
-__main__.py
+Defines the `FTPlaceAPI` class which handles communication with the FTPlace API, including setting up the session, handling responses, and fetching user profile and board data.
 
-.
+### `color_config.py`
+
+Defines the `ColorConfig`, `ColorPriority`, and `ColorSet` classes which manage the color configuration, including priorities and ignored colors.
+
+### `config.py`
+
+Defines the `APIConfig` class and various enums for API endpoints and HTTP statuses.
+
+### `exceptions.py`
+
+Defines custom exceptions for handling errors related to the FTPlace API.
+
+### `image_monitor.py`
+
+Defines the `ImageMonitor` class which monitors the board, calculates image statistics, identifies pixels to fix, and handles pixel placement.
+
+### `models.py`
+
+Defines data models such as `Pixel` and `UserProfile` for representing pixel data and user profiles.
+
+### `utils.py`
+
+Defines utility functions and classes such as `ColorManager` for loading images, converting colors, and calculating color distances.
 
 ## Contributing
 

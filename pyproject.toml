@@ -1,0 +1,89 @@
+[tool.poetry]
+name = "ft-place-bot"
+version = "0.1.0"
+description = "A bot to maintain images on FTPlace board"
+authors = ["alde-oli <alde-oli@student.42lausanne.ch>"]
+readme = "README.md"
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = ">=3.9,<4.0"
+requests = "*"
+numpy = "*"
+Pillow = "*"
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^4.0.1"
+ruff = "^0.7.2"
+
+[tool.poetry.group.test.dependencies]
+pytest = "^8.3.4"
+pytest-mock = "^3.14.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 120
+target-version = "py37"
+
+[tool.ruff.lint]
+select = [
+  "A",  # flake8-builtins
+  "AIR",  # airflow
+  "B",  # flake8-bugbear
+  "BLE",  # flake8-blind-except
+  "C4",  # flake8-comprehensions
+  "COM",  # flake8-commas
+  # "D",  # pydocstyle
+  "DTZ",  # flake8-datetimez
+  # "E",  # pycodestyle
+  "F",  # Pyflakes
+  "FBT",  # flake8-boolean-trap
+  "G",  # flake8-logging-format
+  "I",  # isort
+  "ICN",  # flake8-import-conventions
+  "ISC",  # flake8-implicit-str-concat
+  "N",  # pep8-naming
+  "PD",  # pandas-vet
+  "PIE",  # flake8-pie
+  "PL",  # Pylint
+  "PYI",  # flake8-pyi
+  "Q",  # flake8-quotes
+  "RET",  # flake8-return
+  "RSE",  # flake8-raise
+  "S",  # flake8-bandit
+  "SLF",  # flake8-self
+  "T20",  # flake8-print
+  # "TRY",  # tryceratops
+  "UP"  # pyupgrade
+]
+ignore = [
+  "COM812",  # missing-trailing-comma
+  "E731",  # lambda-assignment
+  "E741",  # ambiguous-variable-name
+  "PD901",  # pandas-df-variable-name
+  "RET504",  # unnecessary-assign
+  "S101",  # assert
+]
+
+[tool.ruff.lint.flake8-quotes]
+avoid-escape = true
+docstring-quotes = "double"
+inline-quotes = "double"
+multiline-quotes = "double"
+
+[tool.ruff.lint.isort]
+lines-after-imports = 2
+section-order = ["future", "standard-library", "third-party", "first-party", "local-folder"]
+
+[tool.ruff.lint.per-file-ignores]
+"*/__init__.py" = ["F401", "F403"]
+"*/test_*" = ["FBT003", "S101"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.pylint]
+max-args = 5

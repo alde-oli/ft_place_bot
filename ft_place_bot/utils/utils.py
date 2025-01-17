@@ -2,7 +2,9 @@ from typing import Tuple, Dict, Optional
 import math
 import numpy as np
 from PIL import Image
-from exceptions import FTPlaceError
+from ft_place_bot.core.exceptions import FTPlaceError
+import logging
+import argparse
 
 
 class ColorManager:
@@ -43,3 +45,26 @@ class ColorManager:
                 color_map[x][y] = ColorManager.find_closest_color(rgb, board_data)
                 
         return color_map
+
+
+def setup_logging() -> logging.Logger:
+	logger = logging.getLogger()
+	handler = logging.StreamHandler()
+	formatter = logging.Formatter(
+		'%(asctime)s - %(levelname)s - %(message)s',
+		datefmt='%Y-%m-%d %H:%M:%S'
+	)
+	handler.setFormatter(formatter)
+	logger.addHandler(handler)
+	logger.setLevel(logging.INFO)
+	return logger
+
+
+def parse_args() -> argparse.Namespace:
+	parser = argparse.ArgumentParser(description='FTPlace Image Maintainer')
+	parser.add_argument('img_path', help='Path to the image to maintain')
+	parser.add_argument('origin_x', type=int, help='X coordinate of the origin')
+	parser.add_argument('origin_y', type=int, help='Y coordinate of the origin')
+	parser.add_argument('access_token', help='Access token')
+	parser.add_argument('refresh_token', help='Refresh token')
+	return parser.parse_args()

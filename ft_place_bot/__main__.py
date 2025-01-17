@@ -3,34 +3,12 @@ import argparse
 import sys
 import logging
 
-from client_api import FTPlaceAPI
-from color_config import ColorConfig, ColorPriority, ColorSet
-from image_monitor import ImageMonitor
-from utils import ColorManager
-from config import APIConfig
+from ft_place_bot.client.client_api import FTPlaceAPI
+from ft_place_bot.core.color_config import ColorConfig, ColorPriority, ColorSet
+from ft_place_bot.core.image_monitor import ImageMonitor
+from ft_place_bot.utils.utils import ColorManager, setup_logging, parse_args
+from ft_place_bot.config import APIConfig
 
-
-def setup_logging() -> logging.Logger:
-	logger = logging.getLogger()
-	handler = logging.StreamHandler()
-	formatter = logging.Formatter(
-		'%(asctime)s - %(levelname)s - %(message)s',
-		datefmt='%Y-%m-%d %H:%M:%S'
-	)
-	handler.setFormatter(formatter)
-	logger.addHandler(handler)
-	logger.setLevel(logging.INFO)
-	return logger
-
-
-def parse_args() -> argparse.Namespace:
-	parser = argparse.ArgumentParser(description='FTPlace Image Maintainer')
-	parser.add_argument('img_path', help='Path to the image to maintain')
-	parser.add_argument('origin_x', type=int, help='X coordinate of the origin')
-	parser.add_argument('origin_y', type=int, help='Y coordinate of the origin')
-	parser.add_argument('access_token', help='Access token')
-	parser.add_argument('refresh_token', help='Refresh token')
-	return parser.parse_args()
 
 
 def create_color_config() -> ColorConfig:

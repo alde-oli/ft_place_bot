@@ -5,6 +5,7 @@ from typing import List
 import time
 from dataclasses import dataclass
 from datetime import datetime, timezone
+from ft_place_bot.config import HTTPStatus
 
 
 @dataclass
@@ -119,7 +120,7 @@ class ImageMonitor:
 				}
 			)
 			# Handle different response cases
-			if response.status_code == 425:  # Too early
+			if response.status_code == HTTPStatus.TOO_EARLY.value:  # Too early
 				error_data = response.json()
 				if "timers" in error_data:
 					next_time = datetime.fromisoformat(error_data["timers"][0].replace('Z', '+00:00'))
@@ -130,12 +131,12 @@ class ImageMonitor:
 					else:
 						time.sleep(5)
 				return False   
-			elif response.status_code == 426:  # Token expired
+			elif response.status_code == HTTPStatus.TOKEN_EXPIRED.value:  # Token expired
 				response = self.api._handle_response(response)
-				if response.status_code == 426:
+				if response.status_code == HTTPStatus.TOKEN_EXPIRED.value:
 					raise Exception("Both tokens are expired")
 				return False    
-			elif response.status_code == 200:
+			elif HTTPStatus.is_success(response.status_code):  # Success
 				self.logger.info(f"Pixel successfully placed at ({pixel.x}, {pixel.y})")
 				return True  
 			else:

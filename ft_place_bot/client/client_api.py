@@ -3,9 +3,9 @@ import requests
 from typing import Optional, Dict, Any
 from requests.adapters import HTTPAdapter
 from urllib3.util import Retry
-from config import APIEndpoints, HTTPStatus, APIConfig
-from exceptions import TokenError
-from models import UserProfile
+from ft_place_bot.config import APIEndpoints, HTTPStatus, APIConfig
+from ft_place_bot.core.exceptions import TokenError
+from ft_place_bot.core.models import UserProfile
 
 
 class FTPlaceAPI:
