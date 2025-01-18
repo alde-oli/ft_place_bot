@@ -8,7 +8,7 @@ on:
       - 'rc*'
 
 permissions:
-  contents: write  # Permissions globales pour le workflow
+  contents: write
 
 jobs:
   build:
@@ -62,18 +62,18 @@ jobs:
       shell: bash
       run: |
         if [[ "${{ runner.os }}" == "Linux" ]]; then
-          poetry run python scripts/build.py --name ft_place_bot-linux
+          poetry run python scripts/build.py --name ${{ matrix.asset_name }}
         elif [[ "${{ runner.os }}" == "Windows" ]]; then
-          poetry run python scripts/build.py --name ft_place_bot.exe
+          poetry run python scripts/build.py --name ${{ matrix.asset_name }}
         elif [[ "${{ runner.os }}" == "macOS" ]]; then
-          poetry run python scripts/build.py --name ft_place_bot-macos
+          poetry run python scripts/build.py --name ${{ matrix.asset_name }}
         fi
 
     - name: Upload binary
       uses: actions/upload-artifact@v3
       with:
         name: ${{ matrix.asset_name }}
-        path: dist/
+        path: dist/${{ matrix.asset_name }}
         if-no-files-found: error
 
   release:
@@ -82,15 +82,29 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/download-artifact@v3
+      - name: Download Linux Binary
+        uses: actions/download-artifact@v3
         with:
-          path: dist
+          name: ft_place_bot-linux
+          path: artifacts
+
+      - name: Download Windows Binary
+        uses: actions/download-artifact@v3
+        with:
+          name: ft_place_bot.exe
+          path: artifacts
+
+      - name: Download MacOS Binary
+        uses: actions/download-artifact@v3
+        with:
+          name: ft_place_bot-macos
+          path: artifacts
 
       - name: List files
         shell: bash
         run: |
-          echo "Contents of dist directory:"
-          ls -R dist/
+          echo "Contents of artifacts directory:"
+          ls -la artifacts/
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
@@ -98,6 +112,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files: dist/**/*
+          files: artifacts/*
           prerelease: ${{ contains(github.ref, 'beta') || contains(github.ref, 'rc') }}
           fail_on_unmatched_files: true
