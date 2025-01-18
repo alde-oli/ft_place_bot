@@ -7,90 +7,94 @@
 [![Code Coverage](https://img.shields.io/codecov/c/github/alde-oli/ft_place_bot?style=flat-square)](https://codecov.io/gh/alde-oli/ft_place_bot)
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg?style=flat-square)](https://github.com/astral-sh/ruff)
 
-FTPlace Image Maintainer est une application Python conçue pour maintenir des images sur le tableau FTPlace. Elle utilise l'API FTPlace pour interagir avec le tableau, récupère son état actuel et s'assure que l'image cible est correctement maintenue sur le tableau.
+## Download
 
-## Fonctionnalités
+You can download the latest version of FT Place Bot from the [Releases](https://github.com/alde-oli/ft_place_bot/releases) page.
 
-- Interface interactive pour la configuration
-- Sauvegarde automatique des paramètres précédents
-- Configuration intuitive des priorités de couleurs
-- Conversion automatique des images vers les couleurs FTPlace
-- Surveillance du tableau et identification des pixels à corriger
-- Placement des pixels selon les règles de priorité
-- Gestion automatique de l'expiration des tokens
+FTPlace Image Maintainer is a Python application designed to maintain images on the FTPlace board. It uses the FTPlace API to interact with the board, retrieves its current state, and ensures that the target image is properly maintained on the board.
 
-## Prérequis
+## Features
+
+- Interactive configuration interface
+- Automatic saving of previous settings
+- Intuitive configuration of color priorities
+- Automatic conversion of images to FTPlace colors
+- Board monitoring and identification of pixels to correct
+- Pixel placement according to priority rules
+- Automatic token expiration management
+
+## Prerequisites
 
 - Python 3.9+
 
 ## Installation
 
-1. Clonez le dépôt :
+1. Clone the repository:
     ```sh
     git clone https://github.com/alde-oli/ft_place_bot.git
     cd ft_place_bot
     ```
 
-2. Installez poetry si ce n'est pas déjà fait :
+2. Install poetry if not already installed:
     ```sh
     pip install poetry
     ```
 
-3. Installez les dépendances :
+3. Install dependencies:
     ```sh
     poetry install
     ```
 
-## Utilisation
+## Usage
 
-1. Lancez l'application :
+1. Run the application:
     ```sh
     poetry run ft_place_bot
     ```
 
-2. Suivez les étapes interactives :
-   - Configuration des tokens d'accès (sauvegardés pour les utilisations futures)
-   - Sélection de l'image à maintenir
-   - Définition des coordonnées sur le tableau
-   - Configuration des priorités de couleurs (optionnel, configuration précédente réutilisable)
+2. Follow the interactive steps:
+   - Configure access tokens (saved for future use)
+   - Select the image to maintain
+   - Define the coordinates on the board
+   - Configure color priorities (optional, previous configuration reusable)
 
-## Configuration des Couleurs
+## Color Configuration
 
-L'interface vous permet de configurer facilement :
+The interface allows you to easily configure:
 
-- Les niveaux de priorité pour chaque couleur (1-3)
-- Les couleurs à ignorer
-- Les groupes de couleurs similaires
+- Priority levels for each color (1-3)
+- Colors to ignore
+- Groups of similar colors
 
-Votre configuration est automatiquement sauvegardée et peut être réutilisée lors des prochaines exécutions.
+Your configuration is automatically saved and can be reused in future runs.
 
-## Fichiers de Configuration
+## Configuration Files
 
-Les configurations sont stockées dans :
-- `~/.ft_place_bot_config.json` : Stocke les tokens, dernière position, et configuration des couleurs
+Configurations are stored in:
+- `~/.ft_place_bot_config.json`: Stores tokens, last position, and color configuration
 
-## Composants
+## Components
 
-### Interface Interactive (`interface.py`)
-- Gestion des interactions utilisateur
-- Sauvegarde et chargement des configurations
+### Interactive Interface (`interface.py`)
+- User interaction management
+- Configuration saving and loading
 
 ### API Client (`client_api.py`)
-- Communication avec l'API FTPlace
-- Gestion des tokens et des requêtes
+- Communication with the FTPlace API
+- Token and request management
 
-### Gestionnaire d'Images (`utils.py`)
-- Chargement et conversion des images
-- Calcul des distances entre couleurs
+### Image Manager (`utils.py`)
+- Image loading and conversion
+- Color distance calculation
 
-### Moniteur d'Images (`image_monitor.py`)
-- Surveillance du tableau
-- Placement intelligent des pixels
+### Image Monitor (`image_monitor.py`)
+- Board monitoring
+- Intelligent pixel placement
 
 ## Contribution
 
-Les contributions sont les bienvenues ! N'hésitez pas à ouvrir une issue ou à soumettre une pull request pour toute amélioration.
+Contributions are welcome! Feel free to open an issue or submit a pull request for any improvements.
 
-## Licence
+## License
 
-Ce projet est sous licence MIT. Voir le fichier LICENSE pour plus de détails.
+This project is licensed under the MIT License. See the LICENSE file for more details.
