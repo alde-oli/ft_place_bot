@@ -37,7 +37,7 @@ class FTPlaceAPI:
             logger.setLevel(logging.INFO)
         return logger
 
-    def _handle_response(self, response: requests.Response) -> requests.Response:
+    def handle_response(self, response: requests.Response) -> requests.Response:
         if response.status_code == HTTPStatus.TOKEN_EXPIRED.value:
             new_token = response.cookies.get("token")
             if not new_token:

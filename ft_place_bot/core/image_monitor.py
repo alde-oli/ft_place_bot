@@ -9,6 +9,7 @@ from requests.exceptions import RequestException
 
 from ft_place_bot.config import HTTPStatus
 from ft_place_bot.core.color_config import ColorConfig
+from ft_place_bot.core.exceptions import TokenError
 
 
 @dataclass
@@ -117,6 +118,7 @@ class ImageMonitor:
                 f"{self.api.config.base_url}/api/set",
                 json={"x": int(pixel.x), "y": int(pixel.y), "color": int(pixel.target_color)},
             )
+
             # Handle different response cases
             if response.status_code == HTTPStatus.TOO_EARLY.value:  # Too early
                 error_data = response.json()
@@ -129,18 +131,23 @@ class ImageMonitor:
                     else:
                         time.sleep(5)
                 return False
-            if response.status_code == HTTPStatus.TOKEN_EXPIRED.value:  # Token expired
-                # Instead of accessing private member, use public method or pass through API class
-                response = self.api.refresh_token(response)
-                if response.status_code == HTTPStatus.TOKEN_EXPIRED.value:
-                    raise ValueError("Both tokens are expired")
+
+            try:
+                # Use the API's response handling method instead of direct token refresh
+                response = self.api.handle_response(response)
+
+                if HTTPStatus.is_success(response.status_code):  # Success
+                    self.logger.info("Pixel successfully placed at (%d, %d)", pixel.x, pixel.y)
+                    return True
+
+                self.logger.error("Unexpected error: %d - %s", response.status_code, response.text)
+                time.sleep(5)
                 return False
-            if HTTPStatus.is_success(response.status_code):  # Success
-                self.logger.info("Pixel successfully placed at (%d, %d)", pixel.x, pixel.y)
-                return True
-            self.logger.error("Unexpected error: %d - %s", response.status_code, response.text)
-            time.sleep(5)
-            return False
+
+            except TokenError as e:
+                self.logger.error("Token error: %s", str(e))
+                time.sleep(5)
+                return False
 
         except (OSError, RequestException, ValueError) as e:
             self.logger.error("Error placing pixel: %s", str(e))
