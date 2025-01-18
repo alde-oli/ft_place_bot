@@ -1,134 +1,96 @@
 # FTPlace Image Maintainer
 
-FTPlace Image Maintainer is a Python project designed to monitor and maintain images on the FTPlace board. It uses an API to interact with the board, fetches the current state, and ensures that the target image is correctly represented on the board.
+[![Release](https://img.shields.io/github/v/release/alde-oli/ft_place_bot?include_prereleases&style=flat-square)](https://github.com/alde-oli/ft_place_bot/releases)
+[![CI Status](https://img.shields.io/github/actions/workflow/status/alde-oli/ft_place_bot/ci.yml?branch=main&style=flat-square)](https://github.com/alde-oli/ft_place_bot/actions)
+[![License](https://img.shields.io/github/license/alde-oli/ft_place_bot?style=flat-square)](LICENSE)
+[![Python Version](https://img.shields.io/badge/python-3.9%2B-blue?style=flat-square)](pyproject.toml)
+[![Code Coverage](https://img.shields.io/codecov/c/github/alde-oli/ft_place_bot?style=flat-square)](https://codecov.io/gh/alde-oli/ft_place_bot)
+[![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg?style=flat-square)](https://github.com/astral-sh/ruff)
 
-## Features
+FTPlace Image Maintainer est une application Python conçue pour maintenir des images sur le tableau FTPlace. Elle utilise l'API FTPlace pour interagir avec le tableau, récupère son état actuel et s'assure que l'image cible est correctement maintenue sur le tableau.
 
-- Fetches user profile and board data from the FTPlace API.
-- Converts target images to the closest FTPlace colors.
-- Monitors the board and identifies pixels that need to be fixed.
-- Places pixels on the board according to priority and color rules.
-- Handles token expiration and retries failed requests.
+## Fonctionnalités
 
-## Requirements
+- Interface interactive pour la configuration
+- Sauvegarde automatique des paramètres précédents
+- Configuration intuitive des priorités de couleurs
+- Conversion automatique des images vers les couleurs FTPlace
+- Surveillance du tableau et identification des pixels à corriger
+- Placement des pixels selon les règles de priorité
+- Gestion automatique de l'expiration des tokens
+
+## Prérequis
 
 - Python 3.9+
-- `requests`
-- `numpy`
-- `Pillow`
 
 ## Installation
 
-1. Clone the repository:
+1. Clonez le dépôt :
     ```sh
     git clone https://github.com/alde-oli/ft_place_bot.git
     cd ft_place_bot
     ```
 
-2. Install the required packages:
+2. Installez poetry si ce n'est pas déjà fait :
     ```sh
-    pip install -r requirements.txt
+    pip install poetry
     ```
 
-## Usage
-
-1. Prepare your image and note its path.
-2. Obtain your access and refresh tokens from the FTPlace API.
-3. Run the script with the required arguments:
+3. Installez les dépendances :
     ```sh
-    python -m ft_place_bot <img_path> <origin_x> <origin_y> <access_token> <refresh_token>
+    poetry install
     ```
 
-    - `img_path`: Path to the image to maintain.
-    - `origin_x`: X coordinate of the origin on the board.
-    - `origin_y`: Y coordinate of the origin on the board.
-    - `access_token`: Your access token for the FTPlace API.
-    - `refresh_token`: Your refresh token for the FTPlace API.
+## Utilisation
 
-## Example
+1. Lancez l'application :
+    ```sh
+    poetry run ft_place_bot
+    ```
 
-```sh
-python -m ft_place_bot example_image.png 10 20 your_access_token your_refresh_token
-```
+2. Suivez les étapes interactives :
+   - Configuration des tokens d'accès (sauvegardés pour les utilisations futures)
+   - Sélection de l'image à maintenir
+   - Définition des coordonnées sur le tableau
+   - Configuration des priorités de couleurs (optionnel, configuration précédente réutilisable)
 
-## Configuration
+## Configuration des Couleurs
 
-The color configuration and API settings can be adjusted in the `config.py` and `color_config.py` files. You can define color priorities, ignored colors, and sets of similar colors.
+L'interface vous permet de configurer facilement :
 
-### API Configuration
+- Les niveaux de priorité pour chaque couleur (1-3)
+- Les couleurs à ignorer
+- Les groupes de couleurs similaires
 
-The `APIConfig` class in `config.py` allows you to configure the API settings:
+Votre configuration est automatiquement sauvegardée et peut être réutilisée lors des prochaines exécutions.
 
-- `base_url`: The base URL of the FTPlace API.
-- `refresh_token`: The refresh token for authentication.
-- `access_token`: The access token for authentication.
-- `retry_attempts`: Number of retry attempts for failed requests.
-- `check_interval`: Interval in seconds between checks.
+## Fichiers de Configuration
 
-### Color Configuration
+Les configurations sont stockées dans :
+- `~/.ft_place_bot_config.json` : Stocke les tokens, dernière position, et configuration des couleurs
 
-The `ColorConfig` class in `color_config.py` allows you to configure color priorities and ignored colors:
+## Composants
 
-- `priorities`: A list of `ColorPriority` objects defining the priority levels for different colors.
-- `ignored_source_colors`: A set of color IDs to ignore in the source image.
-- `ignored_board_colors`: A set of color IDs to ignore on the board.
-- `color_sets`: A list of `ColorSet` objects defining sets of similar colors.
+### Interface Interactive (`interface.py`)
+- Gestion des interactions utilisateur
+- Sauvegarde et chargement des configurations
 
-### Example Color Configuration
+### API Client (`client_api.py`)
+- Communication avec l'API FTPlace
+- Gestion des tokens et des requêtes
 
-```python
-example_config = ColorConfig(
-    priorities=[
-        ColorPriority(priority_level=1, color_ids={1, 2, 3}),  # Critical colors
-        ColorPriority(priority_level=2, color_ids={4, 5, 6}),  # Important colors
-        ColorPriority(priority_level=3, color_ids={7, 8, 9}),  # Normal colors
-    ],
-    ignored_source_colors={14},
-    ignored_board_colors={0},
-    color_sets=[
-        ColorSet(main_color=2, similar_colors={12, 13, 14}),  # Blue shades
-    ]
-)
-```
+### Gestionnaire d'Images (`utils.py`)
+- Chargement et conversion des images
+- Calcul des distances entre couleurs
 
-## Logging
+### Moniteur d'Images (`image_monitor.py`)
+- Surveillance du tableau
+- Placement intelligent des pixels
 
-The script logs its activities, including connection status, image conversion, and pixel placement, to the console. You can adjust the logging settings in the `setup_logging` function in `__main__.py`.
+## Contribution
 
-## Components
+Les contributions sont les bienvenues ! N'hésitez pas à ouvrir une issue ou à soumettre une pull request pour toute amélioration.
 
-### `client_api.py`
+## Licence
 
-Defines the `FTPlaceAPI` class which handles communication with the FTPlace API, including setting up the session, handling responses, and fetching user profile and board data.
-
-### `color_config.py`
-
-Defines the `ColorConfig`, `ColorPriority`, and `ColorSet` classes which manage the color configuration, including priorities and ignored colors.
-
-### `config.py`
-
-Defines the `APIConfig` class and various enums for API endpoints and HTTP statuses.
-
-### `exceptions.py`
-
-Defines custom exceptions for handling errors related to the FTPlace API.
-
-### `image_monitor.py`
-
-Defines the `ImageMonitor` class which monitors the board, calculates image statistics, identifies pixels to fix, and handles pixel placement.
-
-### `models.py`
-
-Defines data models such as `Pixel` and `UserProfile` for representing pixel data and user profiles.
-
-### `utils.py`
-
-Defines utility functions and classes such as `ColorManager` for loading images, converting colors, and calculating color distances.
-
-## Contributing
-
-Contributions are welcome! Please open an issue or submit a pull request for any improvements or bug fixes.
-
-## License
-
-This project is licensed under the MIT License. See the LICENSE file for details.
+Ce projet est sous licence MIT. Voir le fichier LICENSE pour plus de détails.
