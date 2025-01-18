@@ -11,7 +11,7 @@ python_version = "3.9"
 strict = true
 
 [tool.pytest.ini_options]
-addopts = "--cov=ft_place_bot --cov-report=term-missing"
+addopts = "--cov=ft_place_bot --cov-report=xml --cov-report=term-missing"
 testpaths = ["tests"]
 
 [tool.poetry.dependencies]
