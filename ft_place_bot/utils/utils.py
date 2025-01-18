@@ -1,11 +1,13 @@
 import argparse
 import logging
 import math
-from typing import Dict, Optional, Tuple
+from typing import Any, Dict, Optional, Tuple
 
 import numpy as np
-from core import FTPlaceError
+from numpy.typing import NDArray
 from PIL import Image, UnidentifiedImageError
+
+from ft_place_bot.core import FTPlaceError
 
 
 class ColorManager:
@@ -14,7 +16,7 @@ class ColorManager:
         return math.sqrt(sum((float(a) - float(b)) ** 2 for a, b in zip(color1, color2)))
 
     @staticmethod
-    def find_closest_color(rgb: Tuple[int, int, int], board_data: Dict) -> int:
+    def find_closest_color(rgb: Tuple[int, int, int], board_data: Dict[str, Any]) -> int:
         min_distance = float("inf")
         closest_color_id = 1
 
@@ -28,7 +30,7 @@ class ColorManager:
         return closest_color_id
 
     @staticmethod
-    def load_image(image_path: str) -> Optional[np.ndarray]:
+    def load_image(image_path: str) -> Optional[NDArray[np.uint8]]:
         try:
             with Image.open(image_path) as img:
                 return np.array(img.convert("RGB"))
@@ -36,13 +38,13 @@ class ColorManager:
             raise FTPlaceError("Failed to load image") from err
 
     @staticmethod
-    def convert_to_ftplace_colors(image: np.ndarray, board_data: Dict) -> np.ndarray:
+    def convert_to_ftplace_colors(image: NDArray[np.uint8], board_data: Dict[str, Any]) -> NDArray[np.int32]:
         height, width, _ = image.shape
         color_map = np.zeros((width, height), dtype=np.int32)
 
         for y in range(height):
             for x in range(width):
-                rgb = tuple(map(int, image[y, x]))
+                rgb: Tuple[int, int, int] = (int(image[y, x][0]), int(image[y, x][1]), int(image[y, x][2]))
                 color_map[x][y] = ColorManager.find_closest_color(rgb, board_data)
 
         return color_map

@@ -1,12 +1,13 @@
 import logging
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 import requests
-from config import APIConfig, APIEndpoints, HTTPStatus
-from core import TokenError, UserProfile
 from requests.adapters import HTTPAdapter
 from requests.exceptions import RequestException
 from urllib3.util import Retry
+
+from ft_place_bot.config import APIConfig, APIEndpoints, HTTPStatus
+from ft_place_bot.core import TokenError, UserProfile
 
 
 class FTPlaceAPI:
@@ -60,7 +61,7 @@ class FTPlaceAPI:
             self.logger.error("Failed to get profile: %s", str(e))
             return None
 
-    def get_board(self) -> Optional[Dict[str, Any]]:
+    def get_board(self) -> Optional[Any]:
         """Fetches and returns the current board state."""
         try:
             response = self.session.get(f"{self.config.base_url}{APIEndpoints.BOARD.value}", params={"type": "board"})

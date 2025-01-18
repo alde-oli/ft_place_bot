@@ -2,11 +2,13 @@ import logging
 import time
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import List
+from typing import Any, Dict, List
 
 import numpy as np
-from config import HTTPStatus
 from requests.exceptions import RequestException
+
+from ft_place_bot.config import HTTPStatus
+from ft_place_bot.core.color_config import ColorConfig
 
 
 @dataclass
@@ -19,7 +21,7 @@ class PixelToFix:
 
 
 class ImageMonitor:
-    def __init__(self, api, config, color_config):
+    def __init__(self, api: Any, config: Any, color_config: ColorConfig) -> None:
         self.api = api
         self.config = config
         self.color_config = color_config
@@ -37,7 +39,9 @@ class ImageMonitor:
             return -1
         return self.color_config.get_main_color(color_id)
 
-    def get_image_stats(self, board: np.ndarray, target_colors: np.ndarray, origin_x: int, origin_y: int) -> dict:
+    def get_image_stats(
+        self, board: np.ndarray[Any, Any], target_colors: np.ndarray[Any, Any], origin_x: int, origin_y: int
+    ) -> Dict[str, Any]:
         """Calculates image statistics considering the color configuration"""
         image_width, image_height = target_colors.shape
         correct_pixels = incorrect_pixels = total_countable_pixels = 0
@@ -69,7 +73,7 @@ class ImageMonitor:
         }
 
     def _get_pixels_to_fix(
-        self, board: np.ndarray, target_colors: np.ndarray, origin_x: int, origin_y: int
+        self, board: np.ndarray[Any, Any], target_colors: np.ndarray[Any, Any], origin_x: int, origin_y: int
     ) -> List[PixelToFix]:
         """
         Identifies pixels to fix considering priorities and color rules
@@ -142,7 +146,7 @@ class ImageMonitor:
             self.logger.error("Error placing pixel: %s", str(e))
             return False
 
-    def monitor_and_maintain(self, target_colors: np.ndarray, origin_x: int, origin_y: int):
+    def monitor_and_maintain(self, target_colors: np.ndarray[Any, Any], origin_x: int, origin_y: int) -> None:
         """Monitors and maintains the image on the board"""
         max_board_retries = 3
         while True:

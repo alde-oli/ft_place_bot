@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List
+from typing import Any, List
 
 
 @dataclass
@@ -8,7 +8,7 @@ class Pixel:
     y: int
     color: int
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, int]:
         return {"x": int(self.x), "y": int(self.y), "color": int(self.color)}
 
 
@@ -25,7 +25,7 @@ class UserProfile:
     exp: int
 
     @classmethod
-    def from_api_response(cls, data: dict) -> "UserProfile":
+    def from_api_response(cls, data: dict[str, Any]) -> "UserProfile":
         user_infos = data.get("userInfos", {})
         return cls(
             timers=user_infos.get("timers", []),

@@ -1,22 +1,29 @@
 import sys
+from typing import List, Set
 
 from ft_place_bot.client.client_api import FTPlaceAPI
 from ft_place_bot.config import APIConfig
 from ft_place_bot.core import ColorConfig, ColorPriority, ColorSet, ImageMonitor
-from ft_place_bot.interface import Interface
+from ft_place_bot.interface import Interface, PriorityConfig, SimilarColorConfig
 from ft_place_bot.utils import ColorManager, setup_logging
 
 
-def create_color_config(priorities, ignored_colors, similar_colors) -> ColorConfig:
+def create_color_config(
+    priorities: List[PriorityConfig], ignored_colors: Set[int], similar_colors: List[SimilarColorConfig]
+) -> ColorConfig:
     return ColorConfig(
-        priorities=[ColorPriority(**p) for p in priorities],
+        priorities=[
+            ColorPriority(priority_level=p["priority_level"], color_ids=set(p["color_ids"])) for p in priorities
+        ],
         ignored_source_colors=ignored_colors,
         ignored_board_colors=set(),
-        color_sets=[ColorSet(**s) for s in similar_colors],
+        color_sets=[
+            ColorSet(main_color=s["main_color"], similar_colors=set(s["similar_colors"])) for s in similar_colors
+        ],
     )
 
 
-def main():
+def main() -> None:
     logger = setup_logging()
 
     # Interface utilisateur

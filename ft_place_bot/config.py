@@ -1,5 +1,9 @@
 from dataclasses import dataclass
 from enum import Enum
+from pathlib import Path
+from typing import ClassVar, List, Optional, Set
+
+from pydantic import BaseModel
 
 
 class ColorID(Enum):
@@ -37,7 +41,7 @@ class HTTPStatus(Enum):
     SUCCESS_204 = 204
 
     @classmethod
-    def is_success(cls, status_code):
+    def is_success(cls, status_code: int) -> bool:
         return status_code in {
             cls.SUCCESS_200.value,
             cls.SUCCESS_201.value,
@@ -54,29 +58,24 @@ class APIConfig:
     check_interval: float = 1.0
 
 
-from pathlib import Path
-from typing import List, Optional, Set
-
-from pydantic import BaseModel
-
-
 class UserConfiguration(BaseModel):
-    access_token: str
-    refresh_token: str
+    access_token: Optional[str] = None
+    refresh_token: Optional[str] = None
     last_image_path: Optional[str] = None
     last_origin_x: Optional[int] = None
     last_origin_y: Optional[int] = None
-    color_priorities: List[dict] = []
+    color_priorities: List[dict[str, int]] = []
     ignored_colors: Set[int] = set()
-    similar_colors: List[dict] = []
+    similar_colors: List[dict[str, int]] = []
+    _config_file: ClassVar[str] = ".ft_place_bot_config.json"
 
     @classmethod
     def load(cls) -> "UserConfiguration":
-        config_path = Path.home() / ".ft_place_bot_config.json"
+        config_path = Path.home() / cls._config_file
         if config_path.exists():
             return cls.parse_raw(config_path.read_text())
-        return cls(access_token=None, refresh_token=None)
+        return cls()  # Create empty configuration without hardcoded credentials
 
-    def save(self):
-        config_path = Path.home() / ".ft_place_bot_config.json"
+    def save(self) -> None:
+        config_path = Path.home() / self._config_file
         config_path.write_text(self.json())
