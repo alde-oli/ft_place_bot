@@ -40,13 +40,23 @@ jobs:
       run: poetry install --with dev
 
     - name: Build binary
-      run: poetry run build
+      run: |
+        if [ ${{ matrix.os }} == 'ubuntu-latest' ]; then
+          poetry run python scripts/build.py --name ft_place_bot-linux
+        elif [ ${{ matrix.os }} == 'windows-latest' ]; then
+          poetry run python scripts/build.py --name ft_place_bot.exe
+        elif [ ${{ matrix.os }} == 'macos-latest' ]; then
+          poetry run python scripts/build.py --name ft_place_bot-macos
+        fi
 
     - name: Upload binary
       uses: actions/upload-artifact@v3
       with:
         name: ${{ matrix.asset_name }}
-        path: dist/ft_place_bot*
+        path: |
+          dist/ft_place_bot-linux
+          dist/ft_place_bot.exe
+          dist/ft_place_bot-macos
 
   release:
     needs: build
