@@ -55,7 +55,7 @@ class FTPlaceAPI:
         """Fetches and returns the user profile."""
         try:
             response = self.session.get(f"{self.config.base_url}{APIEndpoints.PROFILE.value}")
-            response = self._handle_response(response)
+            response = self.handle_response(response)
             return UserProfile.from_api_response(response.json())
         except (RequestException, TokenError, ValueError) as e:
             self.logger.error("Failed to get profile: %s", str(e))
@@ -65,7 +65,7 @@ class FTPlaceAPI:
         """Fetches and returns the current board state."""
         try:
             response = self.session.get(f"{self.config.base_url}{APIEndpoints.BOARD.value}", params={"type": "board"})
-            response = self._handle_response(response)
+            response = self.handle_response(response)
             return response.json()
         except (RequestException, TokenError, ValueError) as e:
             self.logger.error("Failed to get board: %s", str(e))
