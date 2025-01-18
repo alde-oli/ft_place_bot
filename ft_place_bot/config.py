@@ -1,39 +1,38 @@
-from enum import Enum
 from dataclasses import dataclass
-from typing import List, Tuple, Optional
+from enum import Enum
 
 
 class ColorID(Enum):
-    WHITE     = 01
-    LIGHTGRAY = 02
-    DARKGRAY  = 03
-    BLACK     = 04
-    PINK      = 05
-    RED       = 06
-    ORANGE    = 07
-    BROWN     = 08
-    YELLOW    = 09
-    LIME      = 10
-    GREEN     = 11
-    CYAN      = 12
-    BLUE      = 13
-    INDIGO    = 14
-    MAGENTA   = 15
-    PURPLE    = 16
+    WHITE = 1
+    LIGHTGRAY = 2
+    DARKGRAY = 3
+    BLACK = 4
+    PINK = 5
+    RED = 6
+    ORANGE = 7
+    BROWN = 8
+    YELLOW = 9
+    LIME = 10
+    GREEN = 11
+    CYAN = 12
+    BLUE = 13
+    INDIGO = 14
+    MAGENTA = 15
+    PURPLE = 16
 
 
 class APIEndpoints(Enum):
-    PROFILE   = "/api/profile"
-    BOARD     = "/api/get"
+    PROFILE = "/api/profile"
+    BOARD = "/api/get"
     SET_PIXEL = "/api/set"
 
 
 class HTTPStatus(Enum):
-    TOO_EARLY     = 425
+    TOO_EARLY = 425
     TOKEN_EXPIRED = 426
-    SUCCESS_200   = 200
-    SUCCESS_201   = 201
-    SUCCESS_204   = 204
+    SUCCESS_200 = 200
+    SUCCESS_201 = 201
+    SUCCESS_204 = 204
 
     @classmethod
     def is_success(cls, status_code):
@@ -46,8 +45,8 @@ class HTTPStatus(Enum):
 
 @dataclass
 class APIConfig:
-    base_url:       str
-    refresh_token:  str
-    access_token:   str
+    base_url: str
+    refresh_token: str
+    access_token: str
     retry_attempts: int = 3
     check_interval: float = 1.0

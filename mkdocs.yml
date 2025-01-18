@@ -1,0 +1,27 @@
+site_name: FT Place Bot
+theme:
+    name: material
+    palette:
+        primary: blue
+        accent: light blue
+
+plugins:
+    - search
+    - mkdocstrings:
+        handlers:
+            python:
+                paths: [ft_place_bot]  # source des docstrings
+                options:
+                    show_source: true    # montre le code source
+                    show_root_heading: true
+
+nav:
+    - Home: index.md
+    - API:
+        - Client: api/client.md
+        - Configuration: api/config.md
+        - Core: api/core.md
+        - Utils: api/utils.md
+    - Guide:
+        - Installation: guide/installation.md
+        - Usage: guide/usage.md

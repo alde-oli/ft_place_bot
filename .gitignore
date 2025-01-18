@@ -1,1 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.env
+.venv
 venv/
+
+# Tests
+.coverage
+coverage.xml
+.pytest_cache/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+logs/
+*.log
+
+# Distribution
+dist/
+build/
+*.egg-info/
+
+# Ruff
+.ruff/
+.ruff_cache/
+
+# Generated documentation
+site/

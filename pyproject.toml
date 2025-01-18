@@ -6,19 +6,40 @@ authors = ["alde-oli <alde-oli@student.42lausanne.ch>"]
 readme = "README.md"
 license = "MIT"
 
+[tool.mypy]
+python_version = "3.9"
+strict = true
+
+[tool.pytest.ini_options]
+addopts = "--cov=ft_place_bot --cov-report=term-missing"
+testpaths = ["tests"]
+
 [tool.poetry.dependencies]
-python = ">=3.9,<4.0"
+python = ">=3.9,<3.14"
 requests = "*"
 numpy = "*"
 Pillow = "*"
+mkdocs-material = "^9.5.49"
+
+[tool.poetry.scripts]
+ft_place_bot = "ft_place_bot.__main__:main"
+build = "scripts.build:build"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^4.0.1"
 ruff = "^0.7.2"
+python-dotenv = "^1.0.1"
+bandit = "^1.8.2"
+safety = "^3.2.14"
+mypy = "^1.14.1"
+mkdocs = "^1.6.1"
+mkdocstrings = {extras = ["python"], version = "^0.27.0"}
+pyinstaller = "^6.11.1"
 
 [tool.poetry.group.test.dependencies]
 pytest = "^8.3.4"
 pytest-mock = "^3.14.0"
+pytest-cov = "^6.0.0"
 
 [build-system]
 requires = ["poetry-core"]
@@ -75,12 +96,14 @@ inline-quotes = "double"
 multiline-quotes = "double"
 
 [tool.ruff.lint.isort]
+known-local-folder = ["ft_place_bot"]
 lines-after-imports = 2
 section-order = ["future", "standard-library", "third-party", "first-party", "local-folder"]
 
 [tool.ruff.lint.per-file-ignores]
 "*/__init__.py" = ["F401", "F403"]
 "*/test_*" = ["FBT003", "S101"]
+"scripts/build.py" = ["S603"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
