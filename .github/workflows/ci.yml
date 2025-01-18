@@ -18,7 +18,7 @@ jobs:
         run: poetry install
 
       - name: Run tests with coverage
-        run: poetry run pytest --cov
+        run: poetry run pytest --cov --cov-report=xml
 
       - name: Run security checks
         run: |
@@ -27,3 +27,9 @@ jobs:
 
       - name: Type check
         run: poetry run mypy ft_place_bot/
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage.xml
+          fail_ci_if_error: true

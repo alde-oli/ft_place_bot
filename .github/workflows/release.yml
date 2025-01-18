@@ -30,6 +30,11 @@ jobs:
     - name: Install Poetry
       uses: snok/install-poetry@v1
 
+    - name: Add Poetry to PATH
+      run: |
+        echo "${{ runner.tool_cache }}/poetry/bin" >> $GITHUB_PATH
+        echo "${{ runner.tool_cache }}/poetry/bin" >> $PATH
+
     - name: Install dependencies
       run: poetry install --with dev
 
