@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import ClassVar, List, Optional, Set
+from typing import Any, ClassVar, List, Optional, Set
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class ColorID(Enum):
@@ -64,9 +64,9 @@ class UserConfiguration(BaseModel):
     last_image_path: Optional[str] = None
     last_origin_x: Optional[int] = None
     last_origin_y: Optional[int] = None
-    color_priorities: List[dict[str, int]] = []
-    ignored_colors: Set[int] = set()
-    similar_colors: List[dict[str, int]] = []
+    color_priorities: List[dict[str, Any]] = Field(default_factory=list)
+    ignored_colors: Set[int] = Field(default_factory=set)
+    similar_colors: List[dict[str, Any]] = Field(default_factory=list)
     _config_file: ClassVar[str] = ".ft_place_bot_config.json"
 
     @classmethod
