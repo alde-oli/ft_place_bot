@@ -69,11 +69,21 @@ jobs:
           poetry run python scripts/build.py --name ${{ matrix.asset_name }}
         fi
 
+    - name: Debug - List files
+      shell: bash
+      run: |
+        echo "Current directory:"
+        pwd
+        echo "Directory contents:"
+        ls -la
+        echo "Dist directory contents (if exists):"
+        ls -la dist || echo "dist directory does not exist"
+
     - name: Upload binary
       uses: actions/upload-artifact@v3
       with:
         name: ${{ matrix.asset_name }}
-        path: dist/${{ matrix.asset_name }}
+        path: dist/*
         if-no-files-found: error
 
   release:
@@ -82,29 +92,16 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Download Linux Binary
-        uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v3
         with:
-          name: ft_place_bot-linux
           path: artifacts
 
-      - name: Download Windows Binary
-        uses: actions/download-artifact@v3
-        with:
-          name: ft_place_bot.exe
-          path: artifacts
-
-      - name: Download MacOS Binary
-        uses: actions/download-artifact@v3
-        with:
-          name: ft_place_bot-macos
-          path: artifacts
-
-      - name: List files
+      - name: Debug - List artifacts
         shell: bash
         run: |
-          echo "Contents of artifacts directory:"
+          echo "Artifacts directory contents:"
           ls -la artifacts/
+          find artifacts -type f
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
@@ -112,6 +109,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files: artifacts/*
+          files: artifacts/**/*
           prerelease: ${{ contains(github.ref, 'beta') || contains(github.ref, 'rc') }}
           fail_on_unmatched_files: true

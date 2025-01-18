@@ -1,3 +1,4 @@
+import argparse
 import logging
 import sys
 from pathlib import Path
@@ -26,6 +27,12 @@ ALLOWED_OPTIONS = {
     "--add-data=",
     "--hidden-import=",
 }
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="Build script for ft_place_bot")
+    parser.add_argument("--name", type=str, default="ft_place_bot", help="Name of the output executable")
+    return parser.parse_args()
 
 
 def validate_command(cmd: List[str]) -> bool:
@@ -59,13 +66,13 @@ def validate_paths() -> tuple[Path, Path, Path]:
     return base_dir, main_path, readme_path
 
 
-def get_build_command(base_dir: Path, main_path: Path, readme_path: Path) -> List[str]:
+def get_build_command(base_dir: Path, main_path: Path, readme_path: Path, name: str) -> List[str]:
     """Get the PyInstaller command with safe, validated arguments."""
     cmd = [
         sys.executable,  # Use the current Python interpreter
         "-m",
         "PyInstaller",
-        "--name=ft_place_bot",
+        f"--name={name}",  # Utilise le nom passé en argument
         "--onefile",
         "--clean",
         f"--paths={base_dir / 'ft_place_bot'}",
@@ -85,13 +92,16 @@ def get_build_command(base_dir: Path, main_path: Path, readme_path: Path) -> Lis
 def build() -> None:
     """Build the executable for the current platform with security checks."""
     try:
+        args = parse_args()
         base_dir, main_path, readme_path = validate_paths()
-        cmd = get_build_command(base_dir, main_path, readme_path)
+        cmd = get_build_command(base_dir, main_path, readme_path, args.name)
 
         if not validate_command(cmd):
             raise ValueError("Invalid build command detected")
 
         logger.info("Starting build process...")
+        logger.info("Building executable with name: %s", {args.name})
+
         # We explicitly validate the command above, so this is safe
         result = run(  # nosec B603
             cmd,
