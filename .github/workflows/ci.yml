@@ -16,7 +16,7 @@ jobs:
       - uses: snok/install-poetry@v1
 
       - name: Install dependencies
-        run: poetry install
+        run: poetry install --with dev
 
       # Commenter ou supprimer l'étape de test pour l'instant
       # - name: Run tests with coverage
