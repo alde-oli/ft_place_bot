@@ -8,9 +8,11 @@ class ColorID(Enum):
     DARKGRAY = 3
     BLACK = 4
     PINK = 5
+    DARKRED = 18
     RED = 6
     ORANGE = 7
     BROWN = 8
+    BEIGE = 17
     YELLOW = 9
     LIME = 10
     GREEN = 11
@@ -50,3 +52,31 @@ class APIConfig:
     access_token: str
     retry_attempts: int = 3
     check_interval: float = 1.0
+
+
+from pathlib import Path
+from typing import List, Optional, Set
+
+from pydantic import BaseModel
+
+
+class UserConfiguration(BaseModel):
+    access_token: str
+    refresh_token: str
+    last_image_path: Optional[str] = None
+    last_origin_x: Optional[int] = None
+    last_origin_y: Optional[int] = None
+    color_priorities: List[dict] = []
+    ignored_colors: Set[int] = set()
+    similar_colors: List[dict] = []
+
+    @classmethod
+    def load(cls) -> "UserConfiguration":
+        config_path = Path.home() / ".ft_place_bot_config.json"
+        if config_path.exists():
+            return cls.parse_raw(config_path.read_text())
+        return cls(access_token=None, refresh_token=None)
+
+    def save(self):
+        config_path = Path.home() / ".ft_place_bot_config.json"
+        config_path.write_text(self.json())

@@ -20,6 +20,9 @@ requests = "*"
 numpy = "*"
 Pillow = "*"
 mkdocs-material = "^9.5.49"
+safety = "^3.2.14"
+questionary = "^2.1.0"
+pydantic = "^2.9.0"
 
 [tool.poetry.scripts]
 ft_place_bot = "ft_place_bot.__main__:main"

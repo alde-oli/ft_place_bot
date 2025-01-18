@@ -144,11 +144,21 @@ class ImageMonitor:
 
     def monitor_and_maintain(self, target_colors: np.ndarray, origin_x: int, origin_y: int):
         """Monitors and maintains the image on the board"""
+        max_board_retries = 3
         while True:
             try:
                 board_data = self.api.get_board()
                 if not board_data:
+                    if max_board_retries > 0:
+                        max_board_retries -= 1
+                        continue
                     raise ValueError("Unable to get the board")
+                if "board" not in board_data:
+                    if max_board_retries > 0:
+                        max_board_retries -= 1
+                        continue
+                    raise ValueError("Invalid board data")
+                max_board_retries = 3
 
                 board = np.array([[cell["color_id"] for cell in row] for row in board_data["board"]])
                 # Get and display stats

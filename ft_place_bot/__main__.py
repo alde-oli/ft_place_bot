@@ -1,34 +1,34 @@
 import sys
 
-from client import FTPlaceAPI
-from config import APIConfig
-from core import ColorConfig, ColorPriority, ColorSet, ImageMonitor
-from utils import ColorManager, parse_args, setup_logging
+from ft_place_bot.client.client_api import FTPlaceAPI
+from ft_place_bot.config import APIConfig
+from ft_place_bot.core import ColorConfig, ColorPriority, ColorSet, ImageMonitor
+from ft_place_bot.interface import Interface
+from ft_place_bot.utils import ColorManager, setup_logging
 
 
-def create_color_config() -> ColorConfig:
+def create_color_config(priorities, ignored_colors, similar_colors) -> ColorConfig:
     return ColorConfig(
-        priorities=[
-            ColorPriority(priority_level=1, color_ids={4}),
-            ColorPriority(priority_level=2, color_ids={1, 2}),
-            ColorPriority(priority_level=3, color_ids={14}),
-        ],
-        ignored_source_colors=set(),
+        priorities=[ColorPriority(**p) for p in priorities],
+        ignored_source_colors=ignored_colors,
         ignored_board_colors=set(),
-        color_sets=[
-            ColorSet(main_color=14, similar_colors={12, 13, 14}),
-        ],
+        color_sets=[ColorSet(**s) for s in similar_colors],
     )
 
 
 def main():
     logger = setup_logging()
-    args = parse_args()
+
+    # Interface utilisateur
+    access_token, refresh_token = Interface.get_tokens()
+    img_path = Interface.get_image_path()
+    origin_x, origin_y = Interface.get_origin()
+    priorities, ignored_colors, similar_colors = Interface.configure_colors()
 
     api_config = APIConfig(
         base_url="https://ftplace.42lwatch.ch",
-        refresh_token=args.refresh_token,
-        access_token=args.access_token,
+        refresh_token=refresh_token,
+        access_token=access_token,
         retry_attempts=3,
         check_interval=1.0,
     )
@@ -42,23 +42,23 @@ def main():
             raise ValueError("Unable to retrieve user profile")
         logger.info("Connected as: %s", profile.username)  # Using %-formatting
 
-        color_config = create_color_config()
+        color_config = create_color_config(priorities, ignored_colors, similar_colors)
 
-        logger.info("Loading image: %s", args.img_path)  # Using %-formatting
+        logger.info("Loading image: %s", img_path)  # Using %-formatting
         board_data = api.get_board()
         if not board_data:
             raise ValueError("Unable to retrieve board data")
 
-        image_data = ColorManager.load_image(args.img_path)
+        image_data = ColorManager.load_image(img_path)
         if image_data is None:
-            raise ValueError("Unable to load image: %s" % args.img_path)
+            raise ValueError("Unable to load image: %s" % img_path)
 
         target_colors = ColorManager.convert_to_ftplace_colors(image_data, board_data)
         logger.info("Image successfully converted")
 
-        logger.info("Starting maintenance at position (%d, %d)", args.origin_x, args.origin_y)  # Using %-formatting
+        logger.info("Starting maintenance at position (%d, %d)", origin_x, origin_y)  # Using %-formatting
         monitor = ImageMonitor(api, api_config, color_config)
-        monitor.monitor_and_maintain(target_colors=target_colors, origin_x=args.origin_x, origin_y=args.origin_y)
+        monitor.monitor_and_maintain(target_colors=target_colors, origin_x=origin_x, origin_y=origin_y)
 
     except KeyboardInterrupt:
         logger.info("\nUser requested stop")

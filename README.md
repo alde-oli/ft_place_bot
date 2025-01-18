@@ -21,7 +21,7 @@ FTPlace Image Maintainer is a Python project designed to monitor and maintain im
 
 1. Clone the repository:
     ```sh
-    git clone https://github.com/yourusername/ft_place_bot.git
+    git clone https://github.com/alde-oli/ft_place_bot.git
     cd ft_place_bot
     ```
 
