@@ -7,6 +7,9 @@ on:
       - 'beta*'
       - 'rc*'
 
+permissions:
+  contents: write  # Permissions globales pour le workflow
+
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -32,22 +35,37 @@ jobs:
 
     - name: Install Poetry
       uses: snok/install-poetry@v1
+      with:
+        version: latest
+        installer-parallel: true
+
+    - name: Configure Poetry
+      shell: bash
+      run: |
+        poetry config virtualenvs.create true
+        poetry config virtualenvs.in-project true
 
     - name: Add Poetry to PATH
+      shell: bash
       run: |
-        echo "${{ runner.tool_cache }}/poetry/bin" >> $GITHUB_PATH
-        echo "${{ runner.tool_cache }}/poetry/bin" >> $PATH
+        if [ "$RUNNER_OS" == "Windows" ]; then
+          echo "$APPDATA\Python\Scripts" >> $GITHUB_PATH
+        else
+          echo "$RUNNER_TOOL_CACHE/poetry/bin" >> $GITHUB_PATH
+        fi
 
     - name: Install dependencies
+      shell: bash
       run: poetry install --with dev
 
     - name: Build binary
+      shell: bash
       run: |
-        if [ ${{ matrix.os }} == 'ubuntu-latest' ]; then
+        if [[ "${{ runner.os }}" == "Linux" ]]; then
           poetry run python scripts/build.py --name ft_place_bot-linux
-        elif [ ${{ matrix.os }} == 'windows-latest' ]; then
+        elif [[ "${{ runner.os }}" == "Windows" ]]; then
           poetry run python scripts/build.py --name ft_place_bot.exe
-        elif [ ${{ matrix.os }} == 'macos-latest' ]; then
+        elif [[ "${{ runner.os }}" == "macOS" ]]; then
           poetry run python scripts/build.py --name ft_place_bot-macos
         fi
 
@@ -56,18 +74,30 @@ jobs:
       with:
         name: ${{ matrix.asset_name }}
         path: dist/
+        if-no-files-found: error
 
   release:
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/download-artifact@v3
         with:
-          name: ${{ matrix.asset_name }}
+          path: dist
+
+      - name: List files
+        shell: bash
+        run: |
+          echo "Contents of dist directory:"
+          ls -R dist/
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files: dist/*
+          files: dist/**/*
           prerelease: ${{ contains(github.ref, 'beta') || contains(github.ref, 'rc') }}
+          fail_on_unmatched_files: true
