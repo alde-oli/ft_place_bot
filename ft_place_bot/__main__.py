@@ -9,14 +9,17 @@ from ft_place_bot.utils import ColorManager, setup_logging
 
 
 def create_color_config(
-    priorities: List[PriorityConfig], ignored_colors: Set[int], similar_colors: List[SimilarColorConfig]
+    priorities: List[PriorityConfig],
+    ignored_source_colors: Set[int],
+    ignored_board_colors: Set[int],
+    similar_colors: List[SimilarColorConfig],
 ) -> ColorConfig:
     return ColorConfig(
         priorities=[
             ColorPriority(priority_level=p["priority_level"], color_ids=set(p["color_ids"])) for p in priorities
         ],
-        ignored_source_colors=ignored_colors,
-        ignored_board_colors=set(),
+        ignored_source_colors=ignored_source_colors,
+        ignored_board_colors=ignored_board_colors,
         color_sets=[
             ColorSet(main_color=s["main_color"], similar_colors=set(s["similar_colors"])) for s in similar_colors
         ],
@@ -30,7 +33,7 @@ def main() -> None:
     access_token, refresh_token = Interface.get_tokens()
     img_path = Interface.get_image_path()
     origin_x, origin_y = Interface.get_origin()
-    priorities, ignored_colors, similar_colors = Interface.configure_colors()
+    priorities, ignored_source_colors, ignored_board_colors, similar_colors = Interface.configure_colors()
 
     api_config = APIConfig(
         base_url="https://ftplace.42lwatch.ch",
@@ -49,7 +52,7 @@ def main() -> None:
             raise ValueError("Unable to retrieve user profile")
         logger.info("Connected as: %s", profile.username)  # Using %-formatting
 
-        color_config = create_color_config(priorities, ignored_colors, similar_colors)
+        color_config = create_color_config(priorities, ignored_source_colors, ignored_board_colors, similar_colors)
 
         logger.info("Loading image: %s", img_path)  # Using %-formatting
         board_data = api.get_board()

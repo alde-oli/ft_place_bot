@@ -80,7 +80,7 @@ class Interface:
         return int(origin_x), int(origin_y)
 
     @staticmethod
-    def configure_colors() -> Tuple[List[PriorityConfig], Set[int], List[SimilarColorConfig]]:
+    def configure_colors() -> Tuple[List[PriorityConfig], Set[int], Set[int], List[SimilarColorConfig]]:
         config = UserConfiguration.load()
 
         if config.color_priorities:
@@ -89,7 +89,8 @@ class Interface:
             if use_saved:
                 return (
                     cast(List[PriorityConfig], config.color_priorities),
-                    config.ignored_colors,
+                    config.ignored_source_colors,
+                    config.ignored_board_colors,
                     cast(List[SimilarColorConfig], config.similar_colors),
                 )
 
@@ -107,11 +108,21 @@ class Interface:
             priorities.append({"priority_level": int(level), "color_ids": list(color_ids)})
 
         # Interface for ignored colors
-        ignored = cast(
+        ignored_source = cast(
             List[str],
-            questionary.checkbox("Select colors to ignore:", choices=[f"{c.name} ({c.value})" for c in ColorID]).ask(),
+            questionary.checkbox(
+                "Select colors to ignore on the source image:", choices=[f"{c.name} ({c.value})" for c in ColorID]
+            ).ask(),
         )
-        ignored_colors: Set[int] = {int(c.split("(")[1][:-1]) for c in ignored}
+        ignored_source_colors: Set[int] = {int(c.split("(")[1][:-1]) for c in ignored_source}
+
+        ignored_board = cast(
+            List[str],
+            questionary.checkbox(
+                "Select colors to ignore on the board:", choices=[f"{c.name} ({c.value})" for c in ColorID]
+            ).ask(),
+        )
+        ignored_board_colors: Set[int] = {int(c.split("(")[1][:-1]) for c in ignored_board}
 
         # Interface for similar colors
         similar_colors: List[SimilarColorConfig] = []
@@ -131,8 +142,9 @@ class Interface:
 
         # Save the configuration
         config.color_priorities = cast(List[Dict[str, int]], priorities)
-        config.ignored_colors = ignored_colors
+        config.ignored_source_colors = ignored_source_colors
+        config.ignored_board_colors = ignored_board_colors
         config.similar_colors = cast(List[Dict[str, int]], similar_colors)
         config.save()
 
-        return priorities, ignored_colors, similar_colors
+        return priorities, ignored_source_colors, ignored_board_colors, similar_colors

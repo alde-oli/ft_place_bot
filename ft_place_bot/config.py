@@ -65,7 +65,8 @@ class UserConfiguration(BaseModel):
     last_origin_x: Optional[int] = None
     last_origin_y: Optional[int] = None
     color_priorities: List[dict[str, Any]] = Field(default_factory=list)
-    ignored_colors: Set[int] = Field(default_factory=set)
+    ignored_source_colors: Set[int] = Field(default_factory=set)
+    ignored_board_colors: Set[int] = Field(default_factory=set)
     similar_colors: List[dict[str, Any]] = Field(default_factory=list)
     _config_file: ClassVar[str] = ".ft_place_bot_config.json"
 

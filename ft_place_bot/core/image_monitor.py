@@ -1,4 +1,5 @@
 import logging
+import secrets
 import time
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -109,7 +110,8 @@ class ImageMonitor:
                         )
                     )
         # Sort by priority
-        return sorted(pixels_to_fix, key=lambda p: p.priority)
+        pixels_to_fix.sort(key=lambda pixel: (pixel.priority, secrets.randbelow(1000000)))
+        return pixels_to_fix
 
     def _handle_pixel_placement(self, pixel: PixelToFix) -> bool:
         """Handles pixel placement with retry and error management"""
@@ -152,7 +154,15 @@ class ImageMonitor:
 
             try:
                 # Use the API's response handling method instead of direct token refresh
-                response = self.api.handle_response(response)
+                response, needs_retry = self.api.handle_response(response)
+
+                # If needs_retry is True, try the request again
+                if needs_retry:
+                    response = self.api.session.post(
+                        f"{self.api.config.base_url}/api/set",
+                        json={"x": int(pixel.x), "y": int(pixel.y), "color": int(pixel.target_color)},
+                    )
+                    response, _ = self.api.handle_response(response)  # Handle response again if needed
 
                 if HTTPStatus.is_success(response.status_code):  # Success
                     self.logger.info("Pixel successfully placed at (%d, %d)", pixel.x, pixel.y)
