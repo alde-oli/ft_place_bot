@@ -26,7 +26,6 @@ class ColorManager:
             if distance < min_distance:
                 min_distance = distance
                 closest_color_id = color["id"]
-
         return closest_color_id
 
     @staticmethod
@@ -41,12 +40,10 @@ class ColorManager:
     def convert_to_ftplace_colors(image: NDArray[np.uint8], board_data: Dict[str, Any]) -> NDArray[np.int32]:
         height, width, _ = image.shape
         color_map = np.zeros((width, height), dtype=np.int32)
-
         for y in range(height):
             for x in range(width):
                 rgb: Tuple[int, int, int] = (int(image[y, x][0]), int(image[y, x][1]), int(image[y, x][2]))
                 color_map[x][y] = ColorManager.find_closest_color(rgb, board_data)
-
         return color_map
 
 

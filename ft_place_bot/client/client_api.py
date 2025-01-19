@@ -21,7 +21,7 @@ class FTPlaceAPI:
         self.logger = self._setup_logger()
         self.max_token_retries = 3
         self.session: Optional[requests.Session] = None
-        self.session = self._setup_session()  # Then create the session
+        self.session = self._setup_session()
 
     def _setup_session(self) -> requests.Session:
         session = requests.Session()
@@ -38,27 +38,23 @@ class FTPlaceAPI:
         return session
 
     def _update_session_tokens(self, access_token: str, refresh_token: str) -> None:
-        """Update both tokens in session cookies"""
         if self.session is None:
             raise RuntimeError("Session not initialized")
-
         self.session.cookies.set("token", access_token)
         self.session.cookies.set("refresh", refresh_token)
         self.config.access_token = access_token
         self.config.refresh_token = refresh_token
 
     def _extract_tokens_from_headers(self, headers: Any) -> Tuple[Optional[str], Optional[str]]:
-        """Extract new tokens from Set-Cookie headers"""
         new_access = None
         new_refresh = None
 
         cookies = headers.get("Set-Cookie", "").split(", ")
         for cookie in cookies:
             if cookie.startswith("token="):
-                new_access = cookie.split(";")[0][6:]  # Remove "token=" prefix
+                new_access = cookie.split(";")[0][6:]
             elif cookie.startswith("refresh="):
-                new_refresh = cookie.split(";")[0][8:]  # Remove "refresh=" prefix
-
+                new_refresh = cookie.split(";")[0][8:]
         return new_access, new_refresh
 
     def _setup_logger(self) -> logging.Logger:
@@ -71,19 +67,11 @@ class FTPlaceAPI:
         return logger
 
     def handle_response(self, response: requests.Response, retry_count: int = 0) -> Tuple[requests.Response, bool]:
-        """
-        Handle API response with token refresh logic.
-        Returns (response, needs_retry)
-        """
-        if response.status_code == HTTPStatus.TOKEN_EXPIRED.value:  # Token needs refresh
+        if response.status_code == HTTPStatus.TOKEN_EXPIRED.value:
             if retry_count >= self.max_token_retries:
                 raise AuthenticationError("Max token refresh attempts reached")
-
-            self.logger.info("Token refresh required")
-
             # Extract new tokens from Set-Cookie headers
             new_access, new_refresh = self._extract_tokens_from_headers(response.headers)
-
             if new_access and new_refresh:
                 self._update_session_tokens(new_access, new_refresh)
                 return response, True  # Indicate that request should be retried
@@ -93,7 +81,6 @@ class FTPlaceAPI:
         return response, False
 
     def _make_request(self, method: str, url: str, **kwargs: Any) -> requests.Response:
-        """Make a request with retry logic for token refresh"""
         if self.session is None:
             raise RuntimeError("Session not initialized")
         retry_count = 0
@@ -112,7 +99,6 @@ class FTPlaceAPI:
         raise AuthenticationError("Max token refresh attempts reached")
 
     def get_profile(self) -> Optional[UserProfile]:
-        """Fetches and returns the user profile."""
         try:
             response = self._make_request("GET", f"{self.config.base_url}{APIEndpoints.PROFILE.value}")
             return UserProfile.from_api_response(response.json())
@@ -125,13 +111,11 @@ class FTPlaceAPI:
             return None
 
     def get_board(self) -> Optional[Any]:
-        """Fetches and returns the current board state."""
         try:
             response = self._make_request(
                 "GET", f"{self.config.base_url}{APIEndpoints.BOARD.value}", params={"type": "board"}
             )
             return response.json()
-
         except AuthenticationError:
             self.logger.critical("Authentication failed - unable to refresh tokens. Exiting program...")
             sys.exit(1)

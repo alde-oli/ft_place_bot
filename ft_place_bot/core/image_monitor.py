@@ -44,7 +44,6 @@ class ImageMonitor:
     def get_image_stats(
         self, board: np.ndarray[Any, Any], target_colors: np.ndarray[Any, Any], origin_x: int, origin_y: int
     ) -> Dict[str, Any]:
-        """Calculates image statistics considering the color configuration"""
         image_width, image_height = target_colors.shape
         correct_pixels = incorrect_pixels = total_countable_pixels = 0
 
@@ -77,9 +76,6 @@ class ImageMonitor:
     def _get_pixels_to_fix(
         self, board: np.ndarray[Any, Any], target_colors: np.ndarray[Any, Any], origin_x: int, origin_y: int
     ) -> List[PixelToFix]:
-        """
-        Identifies pixels to fix considering priorities and color rules
-        """
         image_width, image_height = target_colors.shape
         pixels_to_fix = []
 
@@ -114,13 +110,11 @@ class ImageMonitor:
         return pixels_to_fix
 
     def _handle_pixel_placement(self, pixel: PixelToFix) -> bool:
-        """Handles pixel placement with retry and error management"""
         try:
             response = self.api.session.post(
                 f"{self.api.config.base_url}/api/set",
                 json={"x": int(pixel.x), "y": int(pixel.y), "color": int(pixel.target_color)},
             )
-
             # Handle different response cases
             if response.status_code == HTTPStatus.TOO_EARLY.value:  # Too early
                 wait_time: float = 0.0
@@ -130,32 +124,20 @@ class ImageMonitor:
                     if "timers" in error_data:
                         next_time = datetime.fromisoformat(error_data["timers"][0].replace("Z", "+00:00"))
                         wait_time = (next_time - datetime.now(timezone.utc)).total_seconds()
-                        logging.info(
-                            "Using timer from error response: %s", next_time.astimezone().strftime("%Y-%m-%d %H:%M:%S")
-                        )
                 else:
                     next_time = min([datetime.fromisoformat(timer.replace("Z", "+00:00")) for timer in user.timers])
                     wait_time = (next_time - datetime.now(timezone.utc)).total_seconds()
-                    logging.info(
-                        "Using timer from user profile: %s", next_time.astimezone().strftime("%Y-%m-%d %H:%M:%S")
-                    )
 
                 if wait_time > 0:
-                    # get only hh:mm:ss for next_time and convert to local time
                     next_time_str = next_time.astimezone().strftime("%H:%M:%S")
                     self.logger.info("Next pixel available in %.1f seconds | %s", wait_time, next_time_str)
                     time.sleep(wait_time + 1)
-
-                    end_sleep_time = datetime.now(timezone.utc)
-                    self.logger.info("Woke up at: %s", end_sleep_time.strftime("%Y-%m-%d %H:%M:%S"))
                 else:
                     time.sleep(5)
                 return False
 
             try:
-                # Use the API's response handling method instead of direct token refresh
                 response, needs_retry = self.api.handle_response(response)
-
                 # If needs_retry is True, try the request again
                 if needs_retry:
                     response = self.api.session.post(
@@ -167,7 +149,6 @@ class ImageMonitor:
                 if HTTPStatus.is_success(response.status_code):  # Success
                     self.logger.info("Pixel successfully placed at (%d, %d)", pixel.x, pixel.y)
                     return True
-
                 self.logger.error("Unexpected error: %d - %s", response.status_code, response.text)
                 time.sleep(5)
                 return False
@@ -182,7 +163,6 @@ class ImageMonitor:
             return False
 
     def monitor_and_maintain(self, target_colors: np.ndarray[Any, Any], origin_x: int, origin_y: int) -> None:
-        """Monitors and maintains the image on the board"""
         max_board_retries = 3
         while True:
             try:
@@ -216,7 +196,6 @@ class ImageMonitor:
                     time.sleep(5)
                     continue
                 # Process the highest priority pixel
-                self.logger.info("Pixels to fix: %d", len(pixels_to_fix))
                 self._handle_pixel_placement(pixels_to_fix[0])
 
             except (OSError, RequestException, ValueError) as e:
