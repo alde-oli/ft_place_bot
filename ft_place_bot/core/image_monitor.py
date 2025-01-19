@@ -121,7 +121,7 @@ class ImageMonitor:
 
             # Handle different response cases
             if response.status_code == HTTPStatus.TOO_EARLY.value:  # Too early
-                wait_time = 0
+                wait_time: float = 0.0
                 user = self.api.get_profile()
                 if not user:
                     error_data = response.json()
@@ -140,8 +140,8 @@ class ImageMonitor:
 
                 if wait_time > 0:
                     # get only hh:mm:ss for next_time and convert to local time
-                    next_time = next_time.astimezone().strftime("%H:%M:%S")
-                    self.logger.info("Next pixel available in %.1f seconds | %s", wait_time, next_time)
+                    next_time_str = next_time.astimezone().strftime("%H:%M:%S")
+                    self.logger.info("Next pixel available in %.1f seconds | %s", wait_time, next_time_str)
                     time.sleep(wait_time + 1)
 
                     end_sleep_time = datetime.now(timezone.utc)
