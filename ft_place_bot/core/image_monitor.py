@@ -121,15 +121,33 @@ class ImageMonitor:
 
             # Handle different response cases
             if response.status_code == HTTPStatus.TOO_EARLY.value:  # Too early
-                error_data = response.json()
-                if "timers" in error_data:
-                    next_time = datetime.fromisoformat(error_data["timers"][0].replace("Z", "+00:00"))
+                wait_time = 0
+                user = self.api.get_profile()
+                if not user:
+                    error_data = response.json()
+                    if "timers" in error_data:
+                        next_time = datetime.fromisoformat(error_data["timers"][0].replace("Z", "+00:00"))
+                        wait_time = (next_time - datetime.now(timezone.utc)).total_seconds()
+                        logging.info(
+                            "Using timer from error response: %s", next_time.astimezone().strftime("%Y-%m-%d %H:%M:%S")
+                        )
+                else:
+                    next_time = min([datetime.fromisoformat(timer.replace("Z", "+00:00")) for timer in user.timers])
                     wait_time = (next_time - datetime.now(timezone.utc)).total_seconds()
-                    if wait_time > 0:
-                        self.logger.info("Next pixel available in %.1f seconds", wait_time)
-                        time.sleep(wait_time + 1)
-                    else:
-                        time.sleep(5)
+                    logging.info(
+                        "Using timer from user profile: %s", next_time.astimezone().strftime("%Y-%m-%d %H:%M:%S")
+                    )
+
+                if wait_time > 0:
+                    # get only hh:mm:ss for next_time and convert to local time
+                    next_time = next_time.astimezone().strftime("%H:%M:%S")
+                    self.logger.info("Next pixel available in %.1f seconds | %s", wait_time, next_time)
+                    time.sleep(wait_time + 1)
+
+                    end_sleep_time = datetime.now(timezone.utc)
+                    self.logger.info("Woke up at: %s", end_sleep_time.strftime("%Y-%m-%d %H:%M:%S"))
+                else:
+                    time.sleep(5)
                 return False
 
             try:
