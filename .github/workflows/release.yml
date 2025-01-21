@@ -69,16 +69,6 @@ jobs:
           poetry run python scripts/build.py --name ${{ matrix.asset_name }}
         fi
 
-    - name: Debug - List files
-      shell: bash
-      run: |
-        echo "Current directory:"
-        pwd
-        echo "Directory contents:"
-        ls -la
-        echo "Dist directory contents (if exists):"
-        ls -la dist || echo "dist directory does not exist"
-
     - name: Upload binary
       uses: actions/upload-artifact@v3
       with:
