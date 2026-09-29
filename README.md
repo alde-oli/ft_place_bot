@@ -1,19 +1,11 @@
 <!-- YoRHa archive -->
-```
-▸ YoRHa // ARCHIVE — FT_PLACE_BOT
-```
+<p align="center"><img src=".github/yorha-header.svg" width="100%" alt="YoRHa // ARCHIVE — ft_place_bot · Type: Personal project (built for a 42 Lausanne community event) · Stack: Python 3.9+ · requests · NumPy · Pillow · pydantic · questionary · Poetry · PyInstaller · Status: □ ARCHIVED · last release v0.8.0"></p>
 
 An interactive Python bot that keeps a pixel-art image intact on FTPlace, 42 Lausanne's shared r/place-style board, by watching the board and repainting wrong pixels in priority order.
 
 [![Release](https://img.shields.io/github/v/release/alde-oli/ft_place_bot?include_prereleases&style=flat-square&color=4e4b42)](https://github.com/alde-oli/ft_place_bot/releases)
 [![Python](https://img.shields.io/badge/python-3.9%2B-4e4b42?style=flat-square)](pyproject.toml)
 [![License](https://img.shields.io/badge/license-MIT-dad4bb?style=flat-square)](LICENSE)
-
-| UNIT DATA | |
-|---|---|
-| Type | Personal project (built for a 42 Lausanne community event) |
-| Stack | Python 3.9+ · requests · NumPy · Pillow · pydantic · questionary · Poetry · PyInstaller |
-| Status | □ ARCHIVED · last release `v0.8.0` |
 
 ## ▸ Overview
 FTPlace gives each user a limited pixel budget on a shared board, and other users keep drawing over you.
