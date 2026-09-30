@@ -7,6 +7,9 @@ An interactive Python bot that keeps a pixel-art image intact on FTPlace, 42 Lau
 [![Python](https://img.shields.io/badge/python-3.9%2B-4e4b42?style=flat-square)](pyproject.toml)
 [![License](https://img.shields.io/badge/license-MIT-dad4bb?style=flat-square)](LICENSE)
 
+<p align="center"><img src=".github/pictures-preview.png" width="80%" alt="Sample targets from pictures/: KCorp logo, KCorp logo with the 42 cores pattern, SyncAI logo — pixel art mapped to the FTPlace palette"></p>
+<p align="center"><sub>Sample targets from <code>pictures/</code>, upscaled (1 square = 1 board pixel).</sub></p>
+
 ## ▸ Overview
 FTPlace gives each user a limited pixel budget on a shared board, and other users keep drawing over you.
 This bot loads a target image, maps every pixel to the nearest board colour (Euclidean RGB distance), then loops:
